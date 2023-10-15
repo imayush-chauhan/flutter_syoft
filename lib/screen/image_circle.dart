@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class ImageCircle extends StatefulWidget {
@@ -13,10 +12,9 @@ class _ImageCircleState extends State<ImageCircle> with SingleTickerProviderStat
 
   double _angle = 0;
   double _angle2 = 0;
-  // Color main = Colors.pink;
   final Duration _duration = const Duration(milliseconds: 2000);
-  final Duration _duration2 = const Duration(milliseconds: 2500);
-  final Duration _duration3 = const Duration(milliseconds: 3000);
+  final Duration _duration2 = const Duration(milliseconds: 3000);
+  final Duration _duration3 = const Duration(milliseconds: 4000);
   late AnimationController _controller;
 
   @override
@@ -29,6 +27,7 @@ class _ImageCircleState extends State<ImageCircle> with SingleTickerProviderStat
   }
 
   int inx = 0;
+  bool opec = false;
 
   List<String> main = [
     "assets/images/image_1.jpeg",
@@ -38,15 +37,16 @@ class _ImageCircleState extends State<ImageCircle> with SingleTickerProviderStat
     "assets/images/image_5.jpeg",
   ];
 
-  void _onPressed() {
+  void _onPressedFor() {
     print("in");
     setState(() {
-      _controller.reset();
+      // _controller.reset();
       _controller.forward();
       _angle = _angle2;
       _angle2 = _angle + (2*pi);
     });
-    Future.delayed(const Duration(milliseconds: 1000),(){
+    _makeOpec();
+    Future.delayed(const Duration(milliseconds: 1500),(){
       setState(() {
         if(inx < main.length-1){
           inx = inx + 1;
@@ -58,6 +58,44 @@ class _ImageCircleState extends State<ImageCircle> with SingleTickerProviderStat
     });
   }
 
+  void _onPressedBack() {
+    print("in");
+    setState(() {
+      // _controller.reset();
+      _controller.forward();
+      _angle = _angle2;
+      _angle2 = _angle - (2*pi);
+    });
+    _makeOpec();
+    Future.delayed(const Duration(milliseconds: 1500),(){
+      setState(() {
+        if(inx > 0){
+          inx = inx - 1;
+        }else{
+          inx = main.length-1;
+        }
+
+      });
+    });
+  }
+
+  void _makeOpec(){
+    print("in");
+
+    Future.delayed(const Duration(milliseconds: 400),(){
+      setState(() {
+        opec = true;
+      });
+    });
+
+    Future.delayed(const Duration(milliseconds: 1800),(){
+      setState(() {
+        opec = false;
+      });
+    });
+
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -66,80 +104,107 @@ class _ImageCircleState extends State<ImageCircle> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 100,),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                TweenAnimationBuilder(
-                  tween: Tween<double>(begin: _angle, end: _angle2),
-                  duration: _duration2,
-                  curve: Curves.fastOutSlowIn,
-                  builder: (BuildContext context, double angle, Widget? child) {
-                    return Transform.rotate(
-                      angle: angle,
-                      child: Image.asset(main[inx],fit: BoxFit.cover,width: 350,height: 350,),
-                    );
-                  },
+      backgroundColor: Colors.white,
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(main[inx],fit: BoxFit.none,width: width,height: height,),
+          TweenAnimationBuilder(
+            tween: Tween<double>(begin: _angle, end: _angle2),
+            duration: _duration3,
+            curve: Curves.easeInOut,
+            builder: (BuildContext context, double angle, Widget? child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(width/2),
+                child: Transform.rotate(
+                  angle: angle,
+                  child: Image.asset(main[inx],fit: BoxFit.none,width: height*0.95,height: height*0.95,),
                 ),
-                // TweenAnimationBuilder(
-                //   tween: Tween<double>(begin: _angle, end: _angle2),
-                //   duration: _duration2,
-                //   curve: Curves.fastOutSlowIn,
-                //   builder: (BuildContext context, double angle, Widget? child) {
-                //     return Transform.rotate(
-                //       angle: angle,
-                //       child: Stack(
-                //           alignment:Alignment.center,
-                //           children: [
-                //             const SizedBox(height: 600,width: 600,),
-                //             ClipRRect(
-                //                 borderRadius: BorderRadius.circular(250),
-                //                 child: Image.asset(main[inx],fit: BoxFit.cover,width: 400,height: 400,))]),
-                //     );
-                //   },
-                // ),
-                // TweenAnimationBuilder(
-                //     tween: Tween<double>(begin: _angle, end: _angle2),
-                //     duration: _duration,
-                //     curve: Curves.easeInOut,
-                //   builder: (BuildContext context, double angle, Widget? child) {
-                //     return Transform.rotate(
-                //       angle: angle,
-                //       child: Stack(
-                //           alignment:Alignment.center,
-                //           children: [
-                //             const SizedBox(height: 500,width: 500,),
-                //             ClipRRect(
-                //               borderRadius: BorderRadius.circular(200),
-                //                 child: Image.asset(main[inx],fit: BoxFit.cover,width: 300,height: 300,))]),
-                //     );
-                //   },
-                // ),
+              );
+            },
+          ),
+          TweenAnimationBuilder(
+            tween: Tween<double>(begin: _angle, end: _angle2),
+            duration: _duration2,
+            curve: Curves.easeInOut,
+            builder: (BuildContext context, double angle, Widget? child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(height/2),
+                child: Transform.rotate(
+                  angle: angle,
+                  child: Image.asset(main[inx],fit: BoxFit.none,width: height*0.75,height: height*0.75,),
+                ),
+              );
+            },
+          ),
+          TweenAnimationBuilder(
+            tween: Tween<double>(begin: _angle, end: _angle2),
+            duration: _duration,
+            curve: Curves.easeInOut,
+            builder: (BuildContext context, double angle, Widget? child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(150),
+                child: Transform.rotate(
+                  angle: angle,
+                  child: Image.asset(main[inx],fit: BoxFit.none,width: height*0.4,height: height*0.4,),
+                ),
+              );
+            },
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeInOut,
+            width: width,height: height,
+            decoration: BoxDecoration(
+              color: opec == false ? Colors.black.withOpacity(0) : Colors.black.withOpacity(0.25),
+            ),
+          ),
+          Positioned(
+            bottom: 40,
+            right: 40,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  onPressed: _onPressedBack,
+                  color: Colors.purple,
+                  height: 50,
+                  minWidth: 100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text("Previous",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600
+                    ),),
+                ),
+
+                SizedBox(width: 20,),
+
+                MaterialButton(
+                  onPressed: _onPressedFor,
+                  color: Colors.purple,
+                  height: 50,
+                  minWidth: 100,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text("Next",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600
+                    ),),
+                ),
               ],
             ),
-
-            ElevatedButton(
-              onPressed: _onPressed,
-              child: Text('Rotate'),
-            ),
-            // Transform.rotate(
-            //   angle: 0,
-            //   child: Container(
-            //     height: 400,
-            //     width: 400,
-            //     decoration: const BoxDecoration(
-            //         color: Colors.pink,
-            //         shape: BoxShape.circle
-            //     ),
-            //     child: SvgPicture.asset("assets/images/choose.svg"),
-            //   ),
-            // )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
