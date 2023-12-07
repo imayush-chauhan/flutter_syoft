@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui/screen/credit_slider.dart';
 import 'package:flutter_ui/screen/image_circle.dart';
+import 'package:flutter_ui/screen/rotate.dart';
 import 'package:flutter_ui/screen/speech_to_text_ff.dart';
 
 void main() {
@@ -19,10 +20,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: CreditSlider(
-        total: 10000,
-        used: 6759,
-      ),
+      home: Rotate(),
+      // home: CreditSlider(
+      //   total: 10000,
+      //   used: 6759,
+      // ),
     );
   }
 }
